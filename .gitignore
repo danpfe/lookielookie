@@ -1,0 +1,9 @@
+target/
+.idea/
+.vscode/
+keycloak-26.5.2/
+*.ipr
+*.iws
+*.iml
+*.log
+.DS_Store
