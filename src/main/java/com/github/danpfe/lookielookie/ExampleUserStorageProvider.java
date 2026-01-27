@@ -57,8 +57,19 @@ public class ExampleUserStorageProvider implements UserStorageProvider /* this i
 
   @Override
   public UserModel validate(final RealmModel realm, final UserModel user) {
-    // TODO Instead of simply returning the same thing we have to make a diff!
-    return getUserByUsername(realm, user.getUsername());
+    final var remoteUser = loader.getUserByAnyUserName(user.getUsername());
+
+    if (remoteUser == null) { // user was deleted, give up
+      return null;
+    }
+
+    user.setFirstName(remoteUser.getFirstName());
+    user.setLastName(remoteUser.getLastName());
+    user.setEmail(remoteUser.getEmailAddresses().getFirst());
+    user.setAttribute(USER_MODEL_EXTERNAL_USER_NAMES, remoteUser.getUserNames());
+    user.setAttribute(USER_MODEL_EXTRA_EMAIL_ADDRESSES, remoteUser.getEmailAddresses());
+
+    return new UserModelDelegate(user);
   }
 
   private UserModel createAdapter(final RealmModel realm, final String username) {
